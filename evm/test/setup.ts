@@ -6,11 +6,6 @@ const setupTest = deployments.createFixture(async ({ deployments, getNamedAccoun
 
   // Contracts
   const token = await ethers.getContract("ERC20_Token");
-  const nft = await ethers.getContract("ERC721_NFT");
-  const staking = await ethers.getContract("Staking_Pool");
-  
-  const rewardTokenAddress = await staking.rewardToken();
-  const rewardToken = await ethers.getContractAt("ERC20_Token", rewardTokenAddress);
 
   // Account config
   const setupAddress = async (address: string) => {
@@ -30,9 +25,6 @@ const setupTest = deployments.createFixture(async ({ deployments, getNamedAccoun
   // Struct
   return {
     token,
-    nft,
-    staking,
-    rewardToken,
     deployer: await setupAddress(deployer),
     owner: await setupAddress(owner),
     user: await setupAddress(user),
