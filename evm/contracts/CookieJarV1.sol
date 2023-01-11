@@ -14,6 +14,8 @@ import "@openzeppelin/contracts/proxy/Clones.sol";
 import "../interfaces/IBAAL.sol";
 
 /// @notice Shamom administers the cookie jar
+/// @dev inspiration lifted from Baal.sol 
+// TODO: check whether AccessControlUpgradeable, UUPSUpgradeable are valid here
 contract CookeJarV1 is Module, AccessControlUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable {
     struct Claim {
         uint256 timestamp;
@@ -114,7 +116,7 @@ contract CookeJarV1 is Module, AccessControlUpgradeable, UUPSUpgradeable, Reentr
         require(amount <= getCookieBalance(), "Not enough cookies in the jar");
         require(bytes(comment).length > 0, "No comment provided");
 
-        token.transferFrom(address(this), msg.sender, amount * cookieTokenValue);
+        token.transferFrom(address(this), msg.sender, amount * cookieTokenValue);  // TODO: source from avatar/target
 
         claims[msg.sender].push(Claim(block.timestamp, amount));
 
@@ -124,12 +126,12 @@ contract CookeJarV1 is Module, AccessControlUpgradeable, UUPSUpgradeable, Reentr
     /// @notice Deposit tokens in the jar to fund cookies
     /// @param amount Amount of token to deposit
     function deposit(uint amount) public payable {
-        token.transferFrom(msg.sender, address(this), amount);
+        token.transferFrom(msg.sender, address(this), amount); // TODO: store in avatar/target
     }
 
     /// @notice Gets the total token balance of the contract
     function getTokenBalance() public view onlyRole(MEMBER_ROLE) returns (uint) {
-        return token.balanceOf(address(this));
+        return token.balanceOf(address(this));  // TODO: source from avatar/target
     }
 
     /// @notice Gets the total balance of the contract expressed in cookies
