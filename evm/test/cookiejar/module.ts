@@ -19,9 +19,7 @@ import {
 import {
   Baal,
   BaalSummoner,
-} from "../src/types/contracts/fixtures/Baal/contracts";
-import { Loot } from "../src/types/contracts/fixtures/Baal/contracts/LootERC20.sol";
-import { Shares } from "../src/types/contracts/fixtures/Baal/contracts/SharesERC20.sol";
+} from "@daohaus/baal-contracts";
 
 use(solidity);
 

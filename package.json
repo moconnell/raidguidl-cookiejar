@@ -1,7 +1,7 @@
 {
-  "name": "summon-raid-app",
+  "name": "raidguidl-cookiejar",
   "version": "0.0.1",
-  "description": "quickly spin up a RG themed web3 dev env",
+  "description": "cookie jar for the Raid Guild",
   "main": "index.js",
   "author": "bitbeckers <code@bitbeckers.com>",
   "license": "MIT",
