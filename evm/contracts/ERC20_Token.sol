@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract ERC20_Token is ERC20, ERC20Burnable, Ownable {
+contract MockRaid is ERC20, ERC20Burnable, Ownable {
     constructor(address _owner) ERC20("MockRaid", "MRD") {
         if (_owner != msg.sender) {
             transferOwnership(_owner);

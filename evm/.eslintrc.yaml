@@ -5,7 +5,7 @@ extends:
   - "prettier"
 parser: "@typescript-eslint/parser"
 parserOptions:
-  project: "tsconfig.json"
+  project: "raidguidl-cookiejar/evm/tsconfig.json"
 plugins:
   - "@typescript-eslint"
 root: true
@@ -19,3 +19,11 @@ rules:
     - error
     - argsIgnorePattern: "_"
       varsIgnorePattern: "_"
+overrides:
+  - files:
+      - test/*.ts
+      - tasks/*.ts
+    rules:
+      quotes:
+        - error
+        - single

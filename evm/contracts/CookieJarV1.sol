@@ -16,7 +16,12 @@ import "../interfaces/IBAAL.sol";
 /// @notice Shamom administers the cookie jar
 /// @dev inspiration lifted from Baal.sol 
 // TODO: check whether AccessControlUpgradeable, UUPSUpgradeable are valid here
-contract CookeJarV1 is Module, AccessControlUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable {
+contract CookieJarV1 is
+    Module,
+    AccessControlUpgradeable,
+    UUPSUpgradeable,
+    ReentrancyGuardUpgradeable
+{
     struct Claim {
         uint256 timestamp;
         uint256 amount;
@@ -53,7 +58,12 @@ contract CookeJarV1 is Module, AccessControlUpgradeable, UUPSUpgradeable, Reentr
         uint256 maxCookiesPerPeriod
     ); /*emits after summoning*/
 
-    event CookiesClaimed(address account, uint256 timestamp, uint256 amount, string comment);
+    event CookiesClaimed(
+        address account,
+        uint256 timestamp,
+        uint256 amount,
+        string comment
+    );
 
     /*******************
      * DEPLOY
@@ -67,7 +77,9 @@ contract CookeJarV1 is Module, AccessControlUpgradeable, UUPSUpgradeable, Reentr
 
     /// @notice Summon Baal with voting configuration & initial array of `members` accounts with `shares` & `loot` weights.
     /// @param _initializationParams Encoded setup information.
-    function setUp(bytes memory _initializationParams) public override(FactoryFriendly) initializer nonReentrant {
+    function initialize(
+        bytes memory _initializationParams
+    ) public initializer nonReentrant {
         (
             address _moloch,
             address payable _token,
@@ -75,7 +87,10 @@ contract CookeJarV1 is Module, AccessControlUpgradeable, UUPSUpgradeable, Reentr
             uint256 _cookieTokenValue,
             uint256 _maxCookiesPerPeriod,
             uint256 _period
-        ) = abi.decode(_initializationParams, (address, address, address, uint256, uint256, uint256));
+        ) = abi.decode(
+                _initializationParams,
+                (address, address, address, uint256, uint256, uint256)
+            );
 
         __Ownable_init();
         __ReentrancyGuard_init();
@@ -91,11 +106,7 @@ contract CookeJarV1 is Module, AccessControlUpgradeable, UUPSUpgradeable, Reentr
         period = _period;
         maxCookiesPerPeriod = _maxCookiesPerPeriod;
 
-        emit SetupComplete(
-            cookieTokenValue,
-            period,
-            maxCookiesPerPeriod
-        );
+        emit SetupComplete(cookieTokenValue, period, maxCookiesPerPeriod);
 
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(MEMBER_ROLE, msg.sender);
@@ -104,19 +115,31 @@ contract CookeJarV1 is Module, AccessControlUpgradeable, UUPSUpgradeable, Reentr
 
     /// @notice Grant membership to the specified address
     /// @param applicant New member address
-    function grantMembership(address applicant) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function grantMembership(
+        address applicant
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         _grantRole(MEMBER_ROLE, applicant);
     }
 
     /// @notice Can be called by members to claim up to maxCookiesPerPeriod cookies in any period
     /// @param amount Amount of cookies claimed
     /// @param comment Reason for the claim
-    function claimCookies(uint256 amount, string calldata comment) public payable virtual onlyRole(MEMBER_ROLE) {
-        require(amount <= remainingAllowance(), "Amount greater than remaining allowance");
+    function claimCookies(
+        uint256 amount,
+        string calldata comment
+    ) public payable virtual onlyRole(MEMBER_ROLE) {
+        require(
+            amount <= remainingAllowance(),
+            "Amount greater than remaining allowance"
+        );
         require(amount <= getCookieBalance(), "Not enough cookies in the jar");
         require(bytes(comment).length > 0, "No comment provided");
+        uint256 cookies = amount * cookieTokenValue;
 
-        token.transferFrom(address(this), msg.sender, amount * cookieTokenValue);  // TODO: source from avatar/target
+        token.transfer(
+            msg.sender,
+            cookies
+        ); // TODO: source from avatar/target
 
         claims[msg.sender].push(Claim(block.timestamp, amount));
 
@@ -130,17 +153,32 @@ contract CookeJarV1 is Module, AccessControlUpgradeable, UUPSUpgradeable, Reentr
     }
 
     /// @notice Gets the total token balance of the contract
-    function getTokenBalance() public view onlyRole(MEMBER_ROLE) returns (uint) {
-        return token.balanceOf(address(this));  // TODO: source from avatar/target
+    function getTokenBalance()
+        public
+        view
+        onlyRole(MEMBER_ROLE)
+        returns (uint)
+    {
+        return token.balanceOf(address(this)); // TODO: source from avatar/target
     }
 
     /// @notice Gets the total balance of the contract expressed in cookies
-    function getCookieBalance() public view onlyRole(MEMBER_ROLE) returns (uint) {
+    function getCookieBalance()
+        public
+        view
+        onlyRole(MEMBER_ROLE)
+        returns (uint)
+    {
         return getTokenBalance() / cookieTokenValue;
     }
 
     /// @notice Gets the total number of cookies claimed by sender in the current period
-    function totalCookiesThisPeriod() public virtual onlyRole(MEMBER_ROLE) returns (uint256 total) {
+    function totalCookiesThisPeriod()
+        public
+        virtual
+        onlyRole(MEMBER_ROLE)
+        returns (uint256 total)
+    {
         Claim[] storage claimed = claims[msg.sender];
         for (uint i = 0; i < claimed.length; i++) {
             Claim memory claim = claimed[i];
@@ -157,7 +195,12 @@ contract CookeJarV1 is Module, AccessControlUpgradeable, UUPSUpgradeable, Reentr
     }
 
     /// @notice Gets the total number of cookies remaining to be claimed by sender in the current period
-    function remainingAllowance() public virtual onlyRole(MEMBER_ROLE) returns (uint256) {
+    function remainingAllowance()
+        public
+        virtual
+        onlyRole(MEMBER_ROLE)
+        returns (uint256)
+    {
         uint256 totalClaimed = totalCookiesThisPeriod();
 
         return maxCookiesPerPeriod - totalClaimed;
@@ -190,4 +233,8 @@ contract CookeJarV1 is Module, AccessControlUpgradeable, UUPSUpgradeable, Reentr
     {
         //empty block
     }
+
+
+    //todo added this here so that contract would not be abstract
+    function setUp(bytes memory initializeParams) public virtual override {}
 }
