@@ -3,15 +3,14 @@ import "@nomiclabs/hardhat-etherscan";
 import "@nomicfoundation/hardhat-toolbox";
 import "@typechain/hardhat";
 import '@openzeppelin/hardhat-upgrades';
-import { config as dotenvConfig } from "dotenv";
 import "hardhat-abi-exporter";
 import "hardhat-deploy";
 import "hardhat-gas-reporter";
+import "solidity-coverage";
+import { config as dotenvConfig } from "dotenv";
 import { HardhatUserConfig } from "hardhat/config";
 import { NetworkUserConfig } from "hardhat/types";
 import { resolve } from "path";
-import "solidity-coverage";
-
 import { accounts, nodeUrl } from "./utils/network";
 
 dotenvConfig({ path: resolve(__dirname, "./.env") });
