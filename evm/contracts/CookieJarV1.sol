@@ -58,6 +58,13 @@ contract CookieJarV1 is
         uint256 maxCookiesPerPeriod
     ); /*emits after summoning*/
 
+    event CookiesAdded(
+        address sender,
+        uint256 timestamp,
+        uint256 amount,
+        uint256 cookieBalance
+    );
+
     event CookiesClaimed(
         address account,
         uint256 timestamp,
@@ -148,8 +155,12 @@ contract CookieJarV1 is
 
     /// @notice Deposit tokens in the jar to fund cookies
     /// @param amount Amount of token to deposit
-    function deposit(uint amount) public payable {
+    function deposit(uint amount) public payable nonReentrant {
+        require(amount % cookieTokenValue == 0, "amount not a multiple of cookieTokenValue");
+
         token.transferFrom(msg.sender, address(this), amount); // TODO: store in avatar/target
+
+        emit CookiesAdded(msg.sender, block.timestamp, amount / cookieTokenValue, getCookieBalance());
     }
 
     /// @notice Gets the total token balance of the contract
@@ -199,6 +210,7 @@ contract CookieJarV1 is
         public
         virtual
         onlyRole(MEMBER_ROLE)
+        nonReentrant
         returns (uint256)
     {
         uint256 totalClaimed = totalCookiesThisPeriod();
